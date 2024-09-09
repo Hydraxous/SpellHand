@@ -18,7 +18,7 @@ namespace SpellHand
 
         public const string PLUGIN_GUID = "com.hydraxous.spellhand";
         public const string PLUGIN_NAME = "SpellHand";
-        public const string PLUGIN_VERSION = "0.0.1";
+        public const string PLUGIN_VERSION = "1.0.0";
 
         private Player_Control_scr player;
         private CONTROL gameManager;
