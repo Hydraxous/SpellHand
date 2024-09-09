@@ -36,12 +36,14 @@ namespace SpellHand
         public Dictionary<string, (int,int)> AnimationMap = new Dictionary<string, (int, int)>();
 
         public ConfigEntry<bool> DisableCrosshairOverlay;
+        public ConfigEntry<bool> FlipRingPositions;
 
         private void Awake()
         {
             Instance = this;
 
             DisableCrosshairOverlay = Config.Bind("General", "DisableCrosshairOverlay", true, "Disables the magic crosshair overlay shown when charging spells.");
+            FlipRingPositions = Config.Bind("General", "FlipRingPositions", false, "Flips the positions of the rings on the hand.");
 
             //Load assetbundle
             AssetLoader = new AssetLoader(Properties.Resources.SpellHandBundle);
@@ -72,6 +74,8 @@ namespace SpellHand
                 LoadAnimationMap();
             }
         }
+
+        //TODO MAKE THE MOD COMPATIBLE WITH SWITCHING LEFT-RIGHT HANDS!!!!!!!
 
         private void LoadAnimationMap()
         {

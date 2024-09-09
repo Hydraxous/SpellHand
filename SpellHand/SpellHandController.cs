@@ -44,8 +44,28 @@ namespace SpellHand
                 return;
             }
 
-            Ring1 = new RingController(this, RingModel1, CON.EQ_MAG2);
-            Ring2 = new RingController(this, RingModel2, CON.EQ_MAG1);
+            bool flip = SpellHandPlugin.Instance.FlipRingPositions.Value;
+
+            Magic_scr eq1 = CON.EQ_MAG2;
+            Magic_scr eq2 = CON.EQ_MAG1;
+            Magic_scr temp = null;
+
+            if (CON.CURRENT_SYS_DATA.SETT_LEFT_HAND > 0)
+            {
+                temp = eq1;
+                eq1 = eq2;
+                eq2 = temp;
+            }
+
+            if (flip)
+            {
+                temp = eq1;
+                eq1 = eq2;
+                eq2 = temp;
+            }
+
+            Ring1 = new RingController(this, RingModel1, eq1);
+            Ring2 = new RingController(this, RingModel2, eq2);
 
             Ring1.Initialize();
             Ring2.Initialize();
@@ -170,7 +190,7 @@ namespace SpellHand
             sparkle = Orb.transform.GetChild(0).GetComponent<MeshRenderer>();
             sphere = Orb.transform.GetChild(1).GetComponent<MeshRenderer>();
             sparkleParticles = Orb.transform.GetChild(2).GetComponent<ParticleSystem>();
-            sparkleScale = sparkle.transform.localScale;
+            sparkleScale = sparkle.transform.localScale * 0.75f;
 
             if (BoundSpell == null)
             {
@@ -205,6 +225,7 @@ namespace SpellHand
 
         private Vector3 sparkleScale;
         private float chargeScaleIncrease = 3f;
+        private float costScaleMax = 400f;
         private Transform mainCam;
 
         private float chargeLastUpdate;
@@ -223,6 +244,9 @@ namespace SpellHand
             bool canCast = ((BoundSpell.MAG_COST <= Hand.CON.CURRENT_PL_DATA.PLAYER_M) || BoundSpell.MAG_BL) && BoundSpell.cooling < Time.time;
             if (canCast)
             {
+                float cost = BoundSpell.MAG_COST;
+                float costScaling = cost / costScaleMax;
+
                 float charge = 0f;
                 if (BoundSpell.MAG_CHARGE_TIME > 0)
                 {
@@ -235,11 +259,22 @@ namespace SpellHand
 
                 sparkle.gameObject.SetActive(true);
 
-                Vector3 bigScale = sparkleScale * chargeScaleIncrease;
-                Vector3 targetScale = Vector3.Lerp(sparkleScale, bigScale, charge);
+                Vector3 bigScale = sparkleScale * (chargeScaleIncrease+(costScaling*0.65f));
+                Vector3 targetScale = Vector3.Lerp(sparkleScale*(1+costScaling), bigScale, charge);
+
+                if(charge == 1f)
+                {
+                    targetScale = bigScale*0.7f;
+                }
+
                 sparkle.transform.localScale = Vector3.MoveTowards(sparkle.transform.localScale, targetScale, 1.5f * dt);
 
                 float spinSpeedBonus = 1f + (charge * 2f);
+                if(charge == 1f)
+                {
+                    spinSpeedBonus = 1.5f;
+                }
+
                 sparkle.transform.Rotate(Vector3.up, 45 * spinSpeedBonus * dt, Space.Self); //Spin the sparkle :3
 
                 if(chargeLastUpdate < 1f && charge >= 1f)
@@ -254,7 +289,7 @@ namespace SpellHand
             {
                 chargeLastUpdate = 0f;
                 sparkle.transform.localScale = Vector3.MoveTowards(sparkle.transform.localScale, Vector3.zero, 0.2f * dt);
-                sparkle.transform.Rotate(Vector3.up, 15 * dt, Space.Self); //Spin the sparkle :3
+                sparkle.transform.Rotate(Vector3.up, -15 * dt, Space.Self); //Spin the sparkle :3
             }
         }
     }
