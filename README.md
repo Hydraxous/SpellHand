@@ -1,7 +1,6 @@
 # SpellHand
 SpellHand is a mod that implements a visual overhaul of spellcasting. It adds a left hand which adorns your equipped magic rings.
 The spell hand is animated and has many different animations depending on the spell. Animations can be configured in the AnimationMapping.txt file where the mod dll is located.
-## Created by Hydraxous
 
 <img src="https://raw.githubusercontent.com/Hydraxous/SpellHand/master/DemoAssets/Preview.PNG" alt="Hand Preview" width="400"/>
 
