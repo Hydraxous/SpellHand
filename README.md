@@ -1,5 +1,5 @@
 # SpellHand
-SpellHand is a mod that implements a visual overhaul of spellcasting. It adds a left hand which adorns your equipped magic rings.
+SpellHand is a mod for the game Lunacid that implements a visual overhaul of spellcasting. It adds a left hand which adorns your equipped magic rings.
 The spell hand is animated and has many different animations depending on which spell is being cast.
 
 <img src="https://raw.githubusercontent.com/Hydraxous/SpellHand/master/DemoAssets/Preview.PNG" alt="Hand Preview" width="400"/>
