@@ -6,6 +6,8 @@ The spell hand is animated and has many different animations depending on the sp
 
 [Watch a Demo Video Here](https://youtu.be/xCf2MlaFNWk)
 
+The mod also disables the crosshair for spells, if you want to stop this behavior you can disable it in the Bepinex/config for the mod.
+
 You can customize the target animation for each spell by modifying AnimationMapping.txt file in the SpellHand folder.
 
 # How to install
