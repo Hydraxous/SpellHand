@@ -18,9 +18,14 @@ The spell hand is animated and has many different animations depending on which 
 - DisableCrosshairOverlay (default:True) -> Disables the center screen magic reticle when charging spells.
 - FlipRingPositions (default:False) -> Flips the left-right positions of the rings on the hand.
 
+## Reassigning Animations
+In the mod folder there is a text file called AnimationMapping.txt. Editing this file you can re-assign the animations to each spell as you like.
+Details on how to set up the assignments are included in the text file. Also [here](https://github.com/Hydraxous/SpellHand/blob/master/SpellHand/Resources/AnimationMapping.txt)
+
+
 # How to install
 1.  Install BepInEx 5.4.21 into your LUNACID files
-2. Go to releases and download the [latest release](https://github.com/Hydraxous/SpellHand/releases/latest)
+2. Download the [latest mod release](https://github.com/Hydraxous/SpellHand/releases/latest)
 3. Extract the mod files into the Lunacid/BepInEx/ folder
 4. Start the game
 5. Enjoy
