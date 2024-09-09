@@ -1,0 +1,36 @@
+//This file is a map for spells to their animation value.
+//The current mapped animations are just my personal preference, you can change them to your liking.
+//If the spell is not in the list, it will use the default 0,0 animation values.
+//int value 1 is the animation for the hand movement
+//int value 2 is the animation for the finger movement
+//To reload the file in game -> RightShift + K or Reload the area.
+//HAND: -1 = Randomize, 0 = ThrustForward, 1 = VerticalPump, 2 = PumpTowardsCamera, 3 = FlickWristOutwards
+//Finger: -1 = Randomize, 0 = OpenHand, 1 = CloseFist, 2 = SnapFingers
+//---------------------------------------------------------------------
+CORPSE TRANSFORMATION=1,1
+WIND DASH=1,1
+ICARIAN FLIGHT=1,1
+HOLY WARMTH=2,1
+SPIRIT WARP=1,1
+QUICK STRIDE=1,1
+LAVA CHASM=1,0
+ICE TEAR=1,0
+COFFIN=3,0
+SUMMON FAIRY=1,0
+SUMMON ICE SWORD=1,0
+SUMMON KODAMA=1,0
+SUMMON SNAIL=1,0
+BLUE FLAME ARC=1,2
+BLOOD DRAIN=2,0
+BLOOD STRIKE=2,2
+BARRIER=1,0
+FLAME SPEAR=3,2
+FIRE WORM=3,0
+FLAME FLARE=3,0
+GHOST LIGHT=3,0
+EARTH STRIKE=0,1
+IGNIS CALOR=3,1
+LITHOMANCY=0,2
+POISON MIST=3,0
+ROCK BRIDGE=0,1
+TORNADO=3,0
