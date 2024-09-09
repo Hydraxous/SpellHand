@@ -4,9 +4,7 @@ using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
 using System.Reflection;
-using System.Text;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -15,23 +13,18 @@ namespace SpellHand
     [BepInPlugin(PLUGIN_GUID, PLUGIN_NAME, PLUGIN_VERSION)]
     public class SpellHandPlugin : BaseUnityPlugin
     {
-
         public const string PLUGIN_GUID = "com.hydraxous.spellhand";
         public const string PLUGIN_NAME = "SpellHand";
         public const string PLUGIN_VERSION = "1.0.0";
 
-        private Player_Control_scr player;
-        private CONTROL gameManager;
-        private Transform mainCamera;
-
         public static SpellHandPlugin Instance { get; private set; }
 
-        public AssetLoader AssetLoader;
-        public GameObject SpellHandPrefab;
+        public AssetLoader AssetLoader { get; private set; }
 
+        public GameObject SpellHandPrefab { get; private set; }
         public GameObject SpellHandInstance;
         
-        public static string modPath => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        public static string ModLocation => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
         public Dictionary<string, (int,int)> AnimationMap = new Dictionary<string, (int, int)>();
 
@@ -53,8 +46,8 @@ namespace SpellHand
 
             Harmony harmony = new Harmony(PLUGIN_GUID + ".harmony");
             harmony.PatchAll();
-
             Logger.LogInfo("Patched Successfully.");
+
 
             Logger.LogInfo($"{PLUGIN_NAME} ({PLUGIN_VERSION}) is loaded!");
 
@@ -75,8 +68,6 @@ namespace SpellHand
             }
         }
 
-        //TODO MAKE THE MOD COMPATIBLE WITH SWITCHING LEFT-RIGHT HANDS!!!!!!!
-
         private void LoadAnimationMap()
         {
             AnimationMap ??= new Dictionary<string, (int, int)>();
@@ -86,50 +77,54 @@ namespace SpellHand
 
             try
             {
-                string filePath = Path.Combine(modPath, "AnimationMap.txt");
+                string filePath = Path.Combine(ModLocation, "AnimationMap.txt");
                 if (!File.Exists(filePath))
                 {
                     //Create a default file.
-                    File.WriteAllText(filePath, Properties.Resources.AnimationMapping);
+                    File.WriteAllText(filePath, Properties.Resources.AnimationMap);
                     Logger.LogInfo("Default animation map created.");
                 }
 
+                //Parse the file.
                 string allText = File.ReadAllText(filePath);
                 string[] lines = allText.Split('\n');
                 foreach (string line in lines)
                 {
-                    //Comment.
+                    //Comment. Ignore
                     if (line.StartsWith("//"))
                     {
                         continue;
                     }
 
-                    string[] parts = line.Split('=');
-                    if (parts.Length != 2)
+                    //Split entry
+                    string[] entryParts = line.Split('=');
+                    if (entryParts.Length != 2)
                     {
                         continue;
                     }
 
-                    string targetSpell = parts[0];
-                    if (string.IsNullOrEmpty(targetSpell))
+                    //Get the spell name.
+                    string targetSpellName = entryParts[0];
+                    if (string.IsNullOrEmpty(targetSpellName))
                     {
                         continue;
                     }
 
-                    string[] animationArgs = parts[1].Split(',');
-                    if (animationArgs.Length != 2)
+                    //Parse the indexes.
+                    string[] animationValues = entryParts[1].Split(',');
+                    if (animationValues.Length != 2)
                     {
                         continue;
                     }
-
+                    
                     int handIndex = 0;
                     int fingerIndex = 0;
-                    if (!int.TryParse(animationArgs[0], out handIndex) || !int.TryParse(animationArgs[1], out fingerIndex))
+                    if (!int.TryParse(animationValues[0], out handIndex) || !int.TryParse(animationValues[1], out fingerIndex))
                     {
                         continue;
                     }
 
-                    AnimationMap[targetSpell] = (handIndex, fingerIndex);
+                    AnimationMap[targetSpellName] = (handIndex, fingerIndex);
                 }
                 
                 Logger.LogInfo($"AnimationMap loaded. {AnimationMap.Count} pairs.");

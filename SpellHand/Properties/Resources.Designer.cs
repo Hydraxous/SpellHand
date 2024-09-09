@@ -62,15 +62,16 @@ namespace SpellHand.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to //This file is a map for spells to their animation value.
-        /////You can edit it how you like. If the spell is not in the list, it will use the default animation values.
-        /////2nd entry is the values.
-        /////value 1 is the animation for the hand movement
-        /////value 2 is the animation for the finger movement
-        ///&quot;CORPSE TRANSFORMATION&quot;=&quot;1,1&quot;.
+        /////The current mapped animations are just my personal preference, you can change them to your liking.
+        /////If the spell is not in the list, it will use the default 0,0 animation values.
+        /////int value 1 is the animation for the hand movement
+        /////int value 2 is the animation for the finger movement
+        /////To reload the file in game -&gt; RightShift + K or Reload the area.
+        /////HAND: -1 = Randomize, 0 = ThrustForward, 1 = VerticalPump, 2 = PumpTowardsCamera, 3 = Fli [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string AnimationMapping {
+        internal static string AnimationMap {
             get {
-                return ResourceManager.GetString("AnimationMapping", resourceCulture);
+                return ResourceManager.GetString("AnimationMap", resourceCulture);
             }
         }
         

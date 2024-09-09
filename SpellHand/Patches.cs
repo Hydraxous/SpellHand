@@ -7,6 +7,7 @@ namespace SpellHand
     [HarmonyPatch]
     public static class Patches
     {
+        //This patch is used to create the SpellHand
         [HarmonyPatch(typeof(CONTROL), nameof(CONTROL.EQMagic)), HarmonyPostfix]
         private static void CONTROL_EQMagic(CONTROL __instance)
         {
@@ -26,8 +27,7 @@ namespace SpellHand
 
         public static event Action<Magic_scr> OnMagicScrCast;
 
-
-        //__state is the charge pre and post cast.
+        //__state is the states of mana and blood before the spell is cast.
         [HarmonyPatch(typeof(Magic_scr), nameof(Magic_scr.Cast)), HarmonyPrefix]
         private static void Magic_scr_Cast_Prefix(Magic_scr __instance, ref float[] __state)
         {
@@ -38,9 +38,10 @@ namespace SpellHand
 
 
         [HarmonyPatch(typeof(Magic_scr), nameof(Magic_scr.Cast)), HarmonyPostfix]
-        private static void Magic_scr_Cast(Magic_scr __instance, float[] __state)
+        private static void Magic_scr_Cast_Postfix(Magic_scr __instance, float[] __state)
         {
-            if (__state[0] != __instance.Player.GetComponent<Player_Control_scr>().CON.CURRENT_PL_DATA.PLAYER_M || __state[1] != __instance.Player.GetComponent<Player_Control_scr>().CON.CURRENT_PL_DATA.PLAYER_B)
+            if (__state[0] != __instance.Player.GetComponent<Player_Control_scr>().CON.CURRENT_PL_DATA.PLAYER_M ||
+                __state[1] != __instance.Player.GetComponent<Player_Control_scr>().CON.CURRENT_PL_DATA.PLAYER_B)
             {
                 //Magic was cast since the resources changed.
                 OnMagicScrCast?.Invoke(__instance);

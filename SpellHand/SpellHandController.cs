@@ -4,14 +4,14 @@ namespace SpellHand
 {
     public class SpellHandController : MonoBehaviour
     {
-        public GameObject RingModel1;
-        public GameObject RingModel2;
+        private GameObject ringModel1;
+        private GameObject ringModel2;
 
         private RingController Ring1;
         private RingController Ring2;
 
-        public Animation HandAnimation;
-        public Animation FingersAnimation;
+        private Animation handAnimation;
+        private Animation fingersAnimation;
 
         private AnimationClip Fingers_Magic_Equip;
         private AnimationClip Fingers_Magic_Idle;
@@ -26,11 +26,11 @@ namespace SpellHand
 
         private void Awake()
         {
-            RingModel1 = transform.GetChild(0).GetChild(0).GetChild(0).GetChild(0).GetChild(0).GetChild(0).GetChild(1).gameObject;
-            RingModel2 = transform.GetChild(0).GetChild(0).GetChild(0).GetChild(0).GetChild(0).GetChild(3).GetChild(1).gameObject;
+            ringModel1 = transform.GetChild(0).GetChild(0).GetChild(0).GetChild(0).GetChild(0).GetChild(0).GetChild(1).gameObject;
+            ringModel2 = transform.GetChild(0).GetChild(0).GetChild(0).GetChild(0).GetChild(0).GetChild(3).GetChild(1).gameObject;
 
-            HandAnimation = transform.GetChild(0).GetChild(0).GetComponent<Animation>();
-            FingersAnimation = transform.GetChild(0).GetChild(0).GetChild(0).GetChild(0).GetChild(0).GetComponent<Animation>();
+            handAnimation = transform.GetChild(0).GetChild(0).GetComponent<Animation>();
+            fingersAnimation = transform.GetChild(0).GetChild(0).GetChild(0).GetChild(0).GetChild(0).GetComponent<Animation>();
         }
 
         private void Start()
@@ -44,8 +44,7 @@ namespace SpellHand
                 return;
             }
 
-            bool flip = SpellHandPlugin.Instance.FlipRingPositions.Value;
-
+            //I know this is a mess, but it works. :)
             Magic_scr eq1 = CON.EQ_MAG2;
             Magic_scr eq2 = CON.EQ_MAG1;
             Magic_scr temp = null;
@@ -57,22 +56,24 @@ namespace SpellHand
                 eq2 = temp;
             }
 
-            if (flip)
+            if (SpellHandPlugin.Instance.FlipRingPositions.Value)
             {
                 temp = eq1;
                 eq1 = eq2;
                 eq2 = temp;
             }
 
-            Ring1 = new RingController(this, RingModel1, eq1);
-            Ring2 = new RingController(this, RingModel2, eq2);
+            Ring1 = new RingController(this, ringModel1, eq1);
+            Ring2 = new RingController(this, ringModel2, eq2);
 
             Ring1.Initialize();
             Ring2.Initialize();
 
+            //Load animations
             Fingers_Magic_Idle = SpellHandPlugin.Instance.AssetLoader.LoadAsset<AnimationClip>(nameof(Fingers_Magic_Idle));
             Fingers_Magic_Equip = SpellHandPlugin.Instance.AssetLoader.LoadAsset<AnimationClip>(nameof(Fingers_Magic_Equip));
 
+            //There are 3 finger animations for casting spells.
             int anims = 3;
             Fingers_Magic_Cast_Anims = new AnimationClip[anims];
             for (int i = 0; i < anims; i++)
@@ -83,6 +84,7 @@ namespace SpellHand
             Hand_Magic_Idle = SpellHandPlugin.Instance.AssetLoader.LoadAsset<AnimationClip>(nameof(Hand_Magic_Idle));
             Hand_Magic_Equip = SpellHandPlugin.Instance.AssetLoader.LoadAsset<AnimationClip>(nameof(Hand_Magic_Equip));
 
+            //There are 4 hand animations for casting spells.
             int handAnims = 4;
             Hand_Magic_Cast_Anims = new AnimationClip[handAnims];
             for (int i = 0; i < handAnims; i++)
@@ -90,11 +92,11 @@ namespace SpellHand
                 Hand_Magic_Cast_Anims[i] = SpellHandPlugin.Instance.AssetLoader.LoadAsset<AnimationClip>($"Hand_Magic_Cast{i}");
             }
 
-            HandAnimation.clip = Hand_Magic_Equip;
-            HandAnimation.Play();
+            handAnimation.clip = Hand_Magic_Equip;
+            handAnimation.Play();
 
-            FingersAnimation.clip = Fingers_Magic_Equip;
-            FingersAnimation.Play();
+            fingersAnimation.clip = Fingers_Magic_Equip;
+            fingersAnimation.Play();
 
             Patches.OnMagicScrCast += Patches_OnMagicScrCast;
         }
@@ -108,19 +110,19 @@ namespace SpellHand
             RingController ring = Ring1.BoundSpell == obj ? Ring1 : Ring2;
 
             AnimationClip handClip = GetClip(ring.HandAnimationIndex, Hand_Magic_Cast_Anims);
-            HandAnimation.Stop();
-            HandAnimation.clip = handClip;
-            HandAnimation.Play();
+            handAnimation.Stop();
+            handAnimation.clip = handClip;
+            handAnimation.Play();
             Invoke(nameof(ResetHandAnimation), handClip.length);
 
             AnimationClip fingerClip = GetClip(ring.FingersAnimationIndex, Fingers_Magic_Cast_Anims);
-            FingersAnimation.Stop();
-            FingersAnimation.clip = fingerClip;
-            FingersAnimation.Play();
+            fingersAnimation.Stop();
+            fingersAnimation.clip = fingerClip;
+            fingersAnimation.Play();
             Invoke(nameof(ResetFingerAnimation), fingerClip.length);
         }
 
-
+        //Returns clamped index or random clip if index is below 0.
         private AnimationClip GetClip(int index, AnimationClip[] clips)
         {
             if(index < 0)
@@ -136,18 +138,17 @@ namespace SpellHand
 
         private void ResetFingerAnimation()
         {
-            FingersAnimation.Stop();
-            FingersAnimation.clip = Fingers_Magic_Idle;
-            FingersAnimation.Play();
+            fingersAnimation.Stop();
+            fingersAnimation.clip = Fingers_Magic_Idle;
+            fingersAnimation.Play();
         }
 
         private void ResetHandAnimation()
         {
-            HandAnimation.Stop();
-            HandAnimation.clip = Hand_Magic_Idle;
-            HandAnimation.Play();
+            handAnimation.Stop();
+            handAnimation.clip = Hand_Magic_Idle;
+            handAnimation.Play();
         }
-
 
         private void Update()
         {
@@ -165,132 +166,6 @@ namespace SpellHand
         private void OnDestroy()
         {
             Patches.OnMagicScrCast -= Patches_OnMagicScrCast;
-        }
-
-    }
-
-    public class RingController
-    {
-        public Magic_scr BoundSpell;
-        public SpellHandController Hand;
-
-        public int HandAnimationIndex;
-        public int FingersAnimationIndex;
-
-        public RingController(SpellHandController spellhand, GameObject ring, Magic_scr boundSpell)
-        {
-            Ring = ring;
-            BoundSpell = boundSpell;
-            Hand = spellhand;
-        }
-
-        public void Initialize()
-        {
-            Orb = Ring.transform.GetChild(0).gameObject;
-            sparkle = Orb.transform.GetChild(0).GetComponent<MeshRenderer>();
-            sphere = Orb.transform.GetChild(1).GetComponent<MeshRenderer>();
-            sparkleParticles = Orb.transform.GetChild(2).GetComponent<ParticleSystem>();
-            sparkleScale = sparkle.transform.localScale * 0.75f;
-
-            if (BoundSpell == null)
-            {
-                return;
-            }
-
-            //Set the colors of the ring to match the spell :3
-            sparkle.material.SetColor("_TintColor", BoundSpell.MAG_COLOR);
-            sphere.material.color = BoundSpell.MAG_COLOR;
-            ParticleSystem.MainModule main = sparkleParticles.main;
-            main.startColor = BoundSpell.MAG_COLOR;
-
-            mainCam = Camera.main.transform;
-
-            //Get the animation clips for the hand and fingers.
-            string magicName = BoundSpell.name.Replace("(Clone)", "");
-            HandAnimationIndex = 0;
-            FingersAnimationIndex = 0;
-
-            if (SpellHandPlugin.Instance.AnimationMap.ContainsKey(magicName))
-            {
-                HandAnimationIndex = SpellHandPlugin.Instance.AnimationMap[magicName].Item1;
-                FingersAnimationIndex = SpellHandPlugin.Instance.AnimationMap[magicName].Item2;
-            }
-        }
-
-        public GameObject Ring;
-        public GameObject Orb;
-        private MeshRenderer sphere;
-        private MeshRenderer sparkle;
-        private ParticleSystem sparkleParticles;
-
-        private Vector3 sparkleScale;
-        private float chargeScaleIncrease = 3f;
-        private float costScaleMax = 400f;
-        private Transform mainCam;
-
-        private float chargeLastUpdate;
-
-        public void Update(float dt)
-        {
-            if(BoundSpell == null)
-            {
-                Ring.SetActive(false);
-                return;
-            }
-
-            Ring.SetActive(true);
-            Orb.transform.LookAt(mainCam);
-
-            bool canCast = ((BoundSpell.MAG_COST <= Hand.CON.CURRENT_PL_DATA.PLAYER_M) || BoundSpell.MAG_BL) && BoundSpell.cooling < Time.time;
-            if (canCast)
-            {
-                float cost = BoundSpell.MAG_COST;
-                float costScaling = cost / costScaleMax;
-
-                float charge = 0f;
-                if (BoundSpell.MAG_CHARGE_TIME > 0)
-                {
-                    charge = Mathf.Clamp01(BoundSpell.charge / BoundSpell.MAG_CHARGE_TIME);
-                }
-                else if(BoundSpell.charge > 0f)
-                {
-                    charge = 1f;
-                }
-
-                sparkle.gameObject.SetActive(true);
-
-                Vector3 bigScale = sparkleScale * (chargeScaleIncrease+(costScaling*0.65f));
-                Vector3 targetScale = Vector3.Lerp(sparkleScale*(1+costScaling), bigScale, charge);
-
-                if(charge == 1f)
-                {
-                    targetScale = bigScale*0.7f;
-                }
-
-                sparkle.transform.localScale = Vector3.MoveTowards(sparkle.transform.localScale, targetScale, 1.5f * dt);
-
-                float spinSpeedBonus = 1f + (charge * 2f);
-                if(charge == 1f)
-                {
-                    spinSpeedBonus = 1.5f;
-                }
-
-                sparkle.transform.Rotate(Vector3.up, 45 * spinSpeedBonus * dt, Space.Self); //Spin the sparkle :3
-
-                if(chargeLastUpdate < 1f && charge >= 1f)
-                {
-                    //Play the sparkle particles when the charge is full.
-                    sparkleParticles.Play();
-                }
-
-                chargeLastUpdate = charge;
-            }
-            else
-            {
-                chargeLastUpdate = 0f;
-                sparkle.transform.localScale = Vector3.MoveTowards(sparkle.transform.localScale, Vector3.zero, 0.2f * dt);
-                sparkle.transform.Rotate(Vector3.up, -15 * dt, Space.Self); //Spin the sparkle :3
-            }
         }
     }
 }
